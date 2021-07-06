@@ -1,0 +1,24 @@
+\begin{thebibliography}{1}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{Vanthoor2011}
+B.~H. Vanthoor, C.~Stanghellini, E.~J. {Van Henten}, P.~H. {De Visser},
+  \href{http://dx.doi.org/10.1016/j.biosystemseng.2011.06.001}{{A methodology
+  for model-based greenhouse design: Part 1, a greenhouse climate model for a
+  broad range of designs and climates}}, Biosystems Engineering 110~(4) (2011)
+  363--377.
+\newblock \href {http://dx.doi.org/10.1016/j.biosystemseng.2011.06.001}
+  {\path{doi:10.1016/j.biosystemseng.2011.06.001}}.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/j.biosystemseng.2011.06.001}
+
+\bibitem{Boulard1987}
+T.~Boulard, A.~Baille, {Analysis of thermal performance of a greenhouse as a
+  solar collector}, Energy in Agriculture 6~(1) (1987) 17--26.
+\newblock \href {http://dx.doi.org/10.1016/0167-5826(87)90018-0}
+  {\path{doi:10.1016/0167-5826(87)90018-0}}.
+
+\end{thebibliography}

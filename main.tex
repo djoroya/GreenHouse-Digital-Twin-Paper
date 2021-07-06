@@ -1,0 +1,216 @@
+\documentclass[5p,twocolumn]{elsarticle}
+
+\input{settings}
+\usepackage{amsmath}
+
+%\modulolinenumbers[5]
+
+\journal{Journal of \LaTeX\ Templates}
+ 
+\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{\textbf{Mathematical description of Greenhouse Digital Twin}}
+    \tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+
+
+%% or include affiliations in footnotes:
+\author[UD]{Deyviss Jesús Oroya-Villalta}
+\ead[url]{djoroya@deusto.es}
+
+\address[UD]{Universidad de Deusto, Avenida de las Universidades 24, 48007 Bilbao, Basque Country, Spain}
+
+\begin{abstract}
+    El control de la temperatura y humedad interior es de las variables más importante a controlar en un invernadero. El potencial de crecimiento la temperature diaria además de la humedad relativa. En este estudio proponemos un sistema de control predictivo teniendo en cuenta que el objetivo del control es mantener las condiciones climática dentro de un intervalo y donde de un puntos de operación. Se presenta simulaciones y ajuste con datos de un invernadero en el norte de España.
+\end{abstract}
+
+\begin{keyword}
+MPC, Agriculture Control, Interval Target Control
+\end{keyword}
+
+\end{frontmatter} 
+\renewcommand{\arraystretch}{1.5}
+
+%\linenumbers
+\section{Introduction}
+
+La idea de este documento explicar los detalles del simulador de invernaderos desarrollado de MATLAB/Simulink. Este esta basado en el modelo presentado en \cite{Vanthoor2011}, aunque esta adaptado a un invernadero localizado en Meñaka-Vizcaya, País Vasco, España, además de agregar un sistema de nebulización. 
+
+\section{State of Art}
+
+\section{Mathematical Models}
+
+\subsection{Materials}
+Data Sources
+\begin{enumerate}
+    \item Meñaka Greenhouse
+    \item Open Weather Meñaka Historical Data
+\end{enumerate}
+
+
+\subsection{Radiation Model}
+
+El modelo de radiación contempla las variables de radiación exterior, radiación interior y pantalla de sombreo. 
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{ccc}
+        \textbf{Type} & \textbf{Name} & \textbf{Not.} \\ \hline
+        \multirow{1}{*}{\textbf{Outputs}}        & Interior Radiation       & $R_i$ \\ \hline
+        \multirow{1}{*}{\textbf{Controls}}       & Shade Screens            & $u_s$ \\ \hline   
+        \multirow{1}{*}{\textbf{Disturbances}}   & Exterior Radiation       & $R_e$ \\ \hline
+    \end{tabular}
+    \caption{Climate Variables}
+\end{table}
+
+En algunas aproximaciones los modelos de radiación son mucho más complejos considerando las radiación infraroja de los elementos considerados mediante la ley de Krichoff, sin embargo en este modelo consideraremos que existe una relación lineal entre la radiación exterior y la radiación interior 
+
+\begin{gather}
+    R_i = \mathcal{G}(u_s)R_e
+\end{gather}
+
+\textit{Shade Screens}. La interacción más sencilla es el pantalla de sombreado, este actúa opacando la radiación recibida del exterior, además de modificando la capacidad calorífica del invernadero. En este caso consideraremos que la pantalla de sombreo, la radiación exterior $R_e$ y la radiación interior sigue la siguiente relación instantánea. 
+\begin{gather}
+    \mathcal{G}(u_s)  =\gamma\Big(1-\eta_{s}\frac{us}{100} \Big)
+\end{gather}
+Donde $\gamma$ es la  proporción de radiación interior cuando las pantallas de sombre están completamente cerradas. Por otra parte $\eta_s$ es la capacidad de atenuación de la pantalla de sombreo. Dependiendo del material de la pantalla la atenuación puede variar des $20\%$ hasta $60\%$.
+
+
+\subsection{Temperature Model}
+
+El modelo climático de este invernadero esta basado en los elementos principales presentados en \cite{Vanthoor2011}. Este modelo de clima contiene variables de valor de temperatura de distintos elementos  del invernadero, además de una variable para de la radiación interior. Los elementos son el aire interior, la cobertura superior, el suelo, y dos capas más profundas del suelo y la propia vegetación. Por último se ha añadido la temperatura de termostato, de manera que el aumento de la temperatura por el termostato es debido a la conducción del aire interior y el propio termostato. 
+
+
+\subsubsection{Elementos considerados}
+
+Cuando trabajamos con modelos de temperatura es necesario crear una red de elementos capaces de absorber y emanar de distintos tipos. Existen tres tipos de formas de transmisión de calor para la variación de temperatura: convección, conducción, radiación. Considerados estos  elementos  podemos crear una red de transferencia de calor para cada tipo transmisión. El calor intercambiado será finalmente superposición de estas redes. 
+
+En este caso consideraremos las siguientes elementos: 
+
+
+
+
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{cc}
+        \textbf{Name} & \textbf{Subscript} \\ \hline
+        Indoor Air    & $i$  \\ 
+        Cover         & $c$  \\ 
+        Floor         & $f$  \\ 
+        Soil          & $s$  \\ 
+        Vegetation    & $v$  \\
+        Ground        & $g$ \\ \hline
+    \end{tabular}
+    \caption{Elements of Temperature Model}
+\end{table}
+
+
+
+\subsubsection{Conservation Equations}
+
+
+Energy Conservation Equation. 
+
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{ccc}
+        \textbf{Type} & \textbf{Name} & \textbf{Not.} \\ \hline
+        \multirow{5}{*}{\textbf{Outputs}}       & Indoor Temperature       & $T_i$  \\ 
+                                                & Cover Temperature        & $T_c$  \\
+                                                & Floor Temperature        & $T_f$  \\
+                                                & Soil Temperature     & $T_{s}$ \\
+                                                & Vegetation Temperature   & $T_v$ \\ \hline
+        \multirow{3}{*}{\textbf{Controls}}       & Ventilation                  & $u_w$ \\
+                                        & Heating System                   & $u_h$ \\
+                                        & Fogging System                   & $u_f$  \\ \hline   
+        \multirow{3}{*}{\textbf{Disturbances}}   & Exterior Temperature    & $T_e$ \\
+                                        & Interior Radiation       & $R_i$ \\
+                                        & Wind Velodity            & $W_v$ \\ \hline
+    \end{tabular}
+    \caption{Climate Variables}
+\end{table}
+
+
+\begin{gather}
+    \begin{aligned}
+        c_{i} \dot{T}_i =&\Q^c_{vi} - \Q^c_{if} -  \Q^c_{ic}  - \Q^c_{ie} + \Q^s_{ei} + \Q_{hi}^c \\
+        c_{c} \dot{T}_c =&\Q^c_{ic}  -  \Q^c_{ic}  - \Q^c_{ce}  +\Q^s_{ec} \\
+        c_{f} \dot{T}_f =&\Q^c_{if} -  \Q^\kappa_{sf}  \\
+        c_{s} \dot{T}_s =&\Q^\kappa_{sf} - \Q^\kappa_{sg}  \\
+        c_{v} \dot{T}_v =&\Q^c_{vi} - \Q^t_{vi}  
+    \end{aligned}
+\end{gather}
+
+Donde hemos considerado que existe los siguientes tipos de transferencia de energía: 
+\begin{enumerate}
+    \item Convección $\Q^c_{a\to b}$.
+    \begin{gather}
+        \Q^c_{a\to b} = A_{ab}\nu\lambda_{air} (T_a - T_b)/d_{ab}
+    \end{gather} 
+    Donde $\lambda_{air}$ es la conductividad térmica 
+    \item por conducción entre elementos denotado por $\Q^\kappa$
+    \item absorbido por radiación solar denotado por $\Q^s$, 
+    \item por evapo-transporación denotado por $\Q^{t}$.
+\end{enumerate}
+
+Por otro lado, siguiendo la leyes de conservación de masa se puede formular la siguiente ecuación para la humedad absoluta interior $H_i$
+
+\begin{table}[ht!]
+    \centering
+    \small
+    \begin{tabular}{ccc}
+        \textbf{Type} & \textbf{Name} & \textbf{Not.} \\ \hline
+        \multirow{1}{*}{\textbf{Outputs}}       & Indoor Humidity       & $T_i$  \\ \hline
+        \multirow{2}{*}{\textbf{Controls}}      & Ventilation           & $u_w$ \\
+                                                & Fogging System        & $u_f$  \\ \hline   
+        \multirow{3}{*}{\textbf{Disturbances}}  & Exterior Temperature  & $T_e$ \\
+                                                & Interior Radiation    & $R_i$ \\
+                                                & Wind Velodity         & $W_v$ \\ \hline
+    \end{tabular}
+    \caption{Climate Variables}
+\end{table}
+
+
+\begin{gather}
+    \begin{aligned}
+        v_{i} \dot{H}_i =&\M^d_{ie} + \M^t_{vi} - \M_{fi}^p  - \M_{ci}^p\\
+    \end{aligned}
+\end{gather}
+
+
+\subsubsection{Control Systems}
+
+A continuación presentaremos los controldores de climate considerados. Cada uno de ellos tiene asociado un modelo de interacción con el modelo de clima.
+
+
+\textit{Ventilation System}. Sin embargo, la tasa de ventilación esta tomado de \cite{Boulard1987}. Además se ha agregado un adicional para el termostato. 
+
+\begin{gather}
+    s
+\end{gather}
+\textit{Heating System}. En general, un termostato se puede considerar como un término adicional de calor en el balance de energía del invernadero. Este término adicional es dependiente de la señal generada por el termostato. En este caso estamos interesados en modelar un termostato con histéresis. Este contiene un \emph{thresh hold} para el apagado y otro para el encendido. 
+
+
+\textit{Fogging System}
+
+\subsection{Crop growth Model}
+
+\subsection{Gas exchange Model}
+
+
+\section{Greenhouse Control Model}
+
+
+\section{}
+\section{Conclusion}
+
+\bibliography{mybibfile}
+
+\end{document}
